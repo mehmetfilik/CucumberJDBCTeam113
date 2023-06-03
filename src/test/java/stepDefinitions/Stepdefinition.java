@@ -1,37 +1,75 @@
 package stepDefinitions;
 
 import io.cucumber.java.en.Given;
+
 import utilities.JDBCReusableMethods;
 
-public class Stepdefinition {
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-    @Given("Database baglantisi kurulur")
+
+import static org.junit.Assert.*;
+
+import static utilities.JDBCReusableMethods.getStatement;
+
+
+public class Stepdefinition {
+    String query;
+    String query1;
+    ResultSet rs;
+
+    int flag;
+
+
+    @Given("Database baglantisi kurulur.")
     public void database_baglantisi_kurulur() {
         JDBCReusableMethods.createConnection();
     }
-    @Given("Query hazirlanir")
+
+    @Given("Query hazirlanir.")
     public void query_hazirlanir() {
-        String query = "";
+        query= "Select charge_id From heallife_hospitaltraining.ambulance_call Where patient_id=1 AND driver='Smith';";
     }
-    @Given("Query calistirilir ve sonuclari alinir")
-    public void query_calistirilir_ve_sonuclari_alinir() {
+
+    @Given("Query calistirilir ve sonuclari alinir.")
+    public void query_calistirilir_ve_sonuclari_alinir() throws SQLException {
+
+        rs = getStatement().executeQuery(query);
 
     }
-    @Given("Query sonuclari dogrulanir")
-    public void query_sonuclari_dogrulanir() {
+    @Given("Query sonuclari dogrulanir.")
+    public void query_sonuclari_dogrulanir() throws SQLException {
+        int expectedData = 2;
 
+        flag=0;
+        while(rs.next()){
+            flag++;
+        }
+        assertEquals(expectedData,flag);
     }
-    @Given("Database baglantisi kapatilir")
+    @Given("Database baglantisi kapatilir.")
     public void database_baglantisi_kapatilir() {
 
+        JDBCReusableMethods.closeConnection();
     }
 
+    @Given("Update Query'si hazirlanir")
+    public void update_query_si_hazirlanir() {
+
+        query1 = "insert into heallife_hospitaltraining.appointment (priority,specialist,doctor,amount,message,appointment_status,source,is_opd,is_ipd,live_consult) values (1,2,2,0,'hello','approved','OFFline','no','yes','yes');";
+    }
+    @Given("Sonuclari alinir ve dogrulanir")
+    public void sonuclari_alinir_ve_dogrulanir() throws SQLException {
+
+        int sonuc = JDBCReusableMethods.getStatement().executeUpdate(query1);
+
+        int verify = 0;
+        if (sonuc>0){
+            verify++;
+        }
+        assertEquals(verify,1);
+
+    }
+
+
 }
-/*
-git init
-git add .
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/mehmetfilik/CucumberJDBCTeam113.git
-git push -u origin main
- */

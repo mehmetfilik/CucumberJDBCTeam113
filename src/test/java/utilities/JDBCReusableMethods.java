@@ -57,12 +57,21 @@ public class JDBCReusableMethods {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        try {
+            resultSet = statement.executeQuery(query);
+        } catch (SQLException e) {
+
+        }
+        /*
         try {
             resultSet = statement.executeQuery(query);
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+         */
         return null;
     }
 
